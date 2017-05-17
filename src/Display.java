@@ -21,17 +21,41 @@ public class Display {
         window.setPreferredSize(new Dimension(width,height));
         window.pack();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setResizable(false);
         window.setLayout(null);
         window.setVisible(true);
         window.setLocationRelativeTo(null);
 
-        //панель и ее настройки
+        //панель игровая и ее настройки
         JPanel GamePanel=new JPanel();
         GamePanel.setVisible(true);
         GamePanel.setBounds(0,0,900,600);
         GamePanel.setLayout(null);
         GamePanel.setBackground(Color.white);
         window.getContentPane().add(GamePanel);
+
+
+        //панель статистики и ее настройки
+        JPanel Statistic=new JPanel();
+        Statistic.setVisible(true);
+        Statistic.setBounds(900,0,300,600);
+        Statistic.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        Statistic.setLayout(null);
+        Statistic.setBackground(Color.white);
+        window.getContentPane().add(Statistic);
+
+
+        //кнопка статистики
+        final JButton Mover=new JButton(x1);
+        Mover.setBounds(121,100,60,60);
+        Statistic.add(Mover);
+
+        //надпись статистики
+        JLabel Mark=new JLabel("Сейчас ходит :");
+        Mark.setBounds(110,40,120,60);
+        Statistic.add(Mark);
+
+
 
         //кнопки (инициализация + действия)
         for(int i=0;i<15;i++){
@@ -46,58 +70,71 @@ public class Display {
                 buttons[i][j].addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        step=step+1;
-                        boolean flg=true;
-                        //
-                        //если ходит 1ый
-                        //
-                        if((step%6==1||step%6==2||step%6==3)){
-                            if(ReasonsToPut(x,y)&&tmp.getIcon()!=dead1&&tmp.getIcon()!=dead2) {
-                            if(tmp.getIcon()==x1) {
-                                step = step - 1;
-                            }else {
-                                if(tmp.getIcon()==x2){
-                                    tmp.setIcon(dead2);
-                                }else {
-                                    tmp.setIcon(x1);
-                                }
-                            }
-                            flg=false;
+                        step = step + 1;
+                        //для статистики
+                        System.out.println(step);
+                        if ((step % 6 == 0 || step % 6 == 1 || step % 6 == 2)) {
+                            Mover.setIcon(x1);
                         }else{
-                               if(ReasonsToPut2(x,y)){
-                                   if(tmp.getIcon()==x2){
-                                       tmp.setIcon(dead2);
-                                   }
-                               }else{
-                                step = step - 1;
-                            }
-                        }
+                            Mover.setIcon(x2);
                         }
 
-                        //
-                        //если ходит 2ой
-                        //
-                            if ((step % 6 == 4 || step % 6 == 5 || step % 6 == 0)) {
-                            if (ReasonsToPut(x, y) && tmp.getIcon() != dead1 && tmp.getIcon() != dead2) {
-                                if (tmp.getIcon() == x2) {
-                                    step = step - 1;
-                                } else {
+                        if (tmp.getIcon() != dead1 && tmp.getIcon() != dead2) {
+                            //
+                            //если ходит 1ый
+                            //
+                            if ((step % 6 == 1 || step % 6 == 2 || step % 6 == 3)) {
+                                if (ReasonsToPut(x, y)) {
                                     if (tmp.getIcon() == x1) {
-                                        tmp.setIcon(dead1);
+                                        step = step - 1;
                                     } else {
-                                        tmp.setIcon(x2);
+                                        if (tmp.getIcon() == x2) {
+                                            tmp.setIcon(dead2);
+                                        } else {
+                                            tmp.setIcon(x1);
+                                        }
+                                    }
+                                } else {
+                                    if (ReasonsToEat(x, y)) {
+                                        if (tmp.getIcon() == x2) {
+                                            tmp.setIcon(dead2);
+                                        }
+                                    } else {
+                                        step = step - 1;
                                     }
                                 }
-                            } else {
-                                if(ReasonsToPut2(x,y)){
-                                    if(tmp.getIcon()==x1){
-                                        tmp.setIcon(dead1);
+                            }else
+
+                            //
+                            //если ходит 2ой
+                            //
+
+                             {
+                                if (ReasonsToPut(x, y) && tmp.getIcon() != dead1 && tmp.getIcon() != dead2) {
+                                    if (tmp.getIcon() == x2) {
+                                        step = step - 1;
+                                    } else {
+                                        if (tmp.getIcon() == x1) {
+                                            tmp.setIcon(dead1);
+                                        } else {
+                                            tmp.setIcon(x2);
+                                        }
                                     }
-                                }else{
-                                    step = step - 1;
+                                } else {
+                                    if (ReasonsToEat(x, y)) {
+                                        if (tmp.getIcon() == x1) {
+                                            tmp.setIcon(dead1);
+                                        }
+                                    } else {
+                                        step = step - 1;
+                                    }
                                 }
                             }
+                        }else{
+                            step=step-1;
                         }
+
+
                     }
                 });
             }
@@ -105,6 +142,7 @@ public class Display {
 
         buttons[0][0].setIcon(x1);
         buttons[14][9].setIcon(x2);
+
     }
 
 
@@ -174,7 +212,7 @@ public class Display {
     }
 
 
-    private boolean ReasonsToPut2(int x,int y){
+    private boolean ReasonsToEat(int x,int y){
         boolean b=false;
         Icon d;
         if(step%6==1||step%6==2||step%6==3){
